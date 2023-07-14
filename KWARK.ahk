@@ -81,6 +81,23 @@ class KWARK Extends NeutronWindow {
 		This.CreateWindow(html, css, js, title)
 	}
 
+	LoadTemplate(filename, title:= "" ){
+		if(!title){
+			title := fileName
+		}
+		This.Load(filename)
+		This.doc.getElementById("title").innerText := title
+
+	}
+
+	AppendView(fileName, toSection:="main", Vars := false){
+		fileName := A_WorkingDir "/" fileName . ".html"
+		FileRead, section, %fileName%
+		section := This.ParseTemplate(section , Vars)
+		This.doc.getElementById(toSection).innerHtml .= "`n" . section
+
+	}
+
     LoadView(fileName, toSection:="main", Vars := false)
 	{
 
@@ -89,6 +106,11 @@ class KWARK Extends NeutronWindow {
         
         section := This.ParseTemplate(section , Vars)
 		This.doc.getElementById(toSection).innerHtml := section
+	}
+
+	AppendHTML(html, toSection:="main")
+	{
+		This.doc.getElementById(toSection).innerHtml .= "`n" . html
 	}
 
     LoadHTML(html, toSection:="main")
@@ -140,6 +162,10 @@ class KWARK Extends NeutronWindow {
 		For id, VarName in This.dynaVars {
 			Var := %VarName%
 			; MsgBox % VarName . ": " . Var
+			Label := This.doc.getElementById(VarName).getAttribute("data-label")
+			if(Label){
+				Gosub % Label
+			}
 			This.doc.getElementById(VarName).innerText := Var
 		}
 	}
