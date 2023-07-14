@@ -75,6 +75,8 @@ class KWARK Extends NeutronWindow {
 </html>
 )"
 
+	dynaVars := []
+
 	__New(html:="", css:="", js:="", title:="KWARK") {
 		This.CreateWindow(html, css, js, title)
 	}
@@ -123,4 +125,22 @@ class KWARK Extends NeutronWindow {
         }
         
     }
+
+	AddDynaVar(names*) {
+		; This.DynaVars[This.DynaVars.Count()+1] := name
+		For id, name in names {
+			This.dynaVars[This.DynaVars.Count()+1] := name
+		}
+		; MsgBox % This.dynaVars.Count()
+
+	}
+
+	UpdateDynaVars(){
+		global
+		For id, VarName in This.dynaVars {
+			Var := %VarName%
+			; MsgBox % VarName . ": " . Var
+			This.doc.getElementById(VarName).innerText := Var
+		}
+	}
 }
