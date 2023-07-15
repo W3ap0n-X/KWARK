@@ -1,6 +1,4 @@
-#Include %A_LineFile%\..
-#include Neutron.ahk
-#include %A_ScriptDir%
+#Include %A_LineFile%\..\Neutron.ahk
 class KWARK Extends NeutronWindow {
     static TEMPLATE := "
 ( ; html
@@ -76,6 +74,7 @@ class KWARK Extends NeutronWindow {
 )"
 
 	dynaVars := []
+	ViewDir := StrReplace(A_LineFile, "KWARK.ahk" , "") . "Views\"
 
 	__New(html:="", css:="", js:="", title:="KWARK") {
 		This.CreateWindow(html, css, js, title)
@@ -86,26 +85,44 @@ class KWARK Extends NeutronWindow {
 			title := fileName
 		}
 		This.Load(filename)
+		bodyHtml:= This.doc.body.innerhtml
+		bodyHtml := This.ParseTemplate(bodyHtml)
+		This.doc.body.innerhtml := bodyHtml
+		customcsstest := "<link href='css/custom.css' rel='stylesheet'>"
+		headerHtml := This.doc.head.innerhtml
+		headerHtml := This.ParseTemplate(headerHtml, {customcsstest: customcsstest})
+		This.doc.head.innerhtml := headerHtml
 		This.doc.getElementById("title").innerText := title
-
 	}
 
 	AppendView(fileName, toSection:="main", Vars := false){
 		fileName := A_WorkingDir "/" fileName . ".html"
 		FileRead, section, %fileName%
 		section := This.ParseTemplate(section , Vars)
-		This.doc.getElementById(toSection).innerHtml .= "`n" . section
-
+		MsgBox % "Before:" . This.doc.getElementById(toSection).innerHtml
+		newcontent := This.doc.getElementById(toSection).innerHtml . section
+		This.doc.getElementById(toSection).innerHtml := newcontent
+		MsgBox % "After:" . This.doc.getElementById(toSection).innerHtml
 	}
 
     LoadView(fileName, toSection:="main", Vars := false)
 	{
-
 		fileName := A_WorkingDir "/" fileName . ".html"
 		FileRead, section, %fileName%
-        
         section := This.ParseTemplate(section , Vars)
 		This.doc.getElementById(toSection).innerHtml := section
+	}
+
+	GetView(fileName, Vars := false)
+	{	
+		filePath := This.ViewDir . "/" fileName . ".html"
+		if (FileExist(filePath)){
+			FileRead, view, %filePath%
+        	view := This.ParseTemplate(view , Vars)
+		} Else {
+			view := "{Error: View " . fileName . " 404} "
+		}
+		return view
 	}
 
 	AppendHTML(html, toSection:="main")
@@ -121,13 +138,10 @@ class KWARK Extends NeutronWindow {
     ParseTemplate(template, Vars := false) {
         Loop
         {
-            ; MsgBox % template
-            if (RegExMatch(template, "{{[^\}]*}}")){
-                ; MsgBox % "BEFORE`n`n" . template
-                template := This.ParsePart(template, Vars)
-                ; MsgBox % "AFTER`n`n" . template
-            
-            } Else {
+			If (RegExMatch(template, "<\!--(@@|\$).*?-->" )) {
+				template := This.ParsePart(template, Vars)
+			}
+			Else {
                 break
             }
         }
@@ -135,33 +149,27 @@ class KWARK Extends NeutronWindow {
     }
 
     ParsePart(template, Vars := false){
-        ; FoundPos := RegExMatch("Michiganroad 72", "O)(.*) (?<nr>\d+)", SubPat)  ; The starting "O)" turns SubPat into an object.
-        ; Msgbox % SubPat.Count() ": " SubPat.Value(1) " " SubPat.Name(2) "=" SubPat["nr"]  ; Displays "2: Michiganroad nr=72"
-        Match := RegExMatch(template, "Om)({{(.*?)}})", templateStrings)
-        if(RegExMatch(templateStrings.Value(2), "Om)(\$(\w+))", templateVar)){
-            varName := templateVar.Value(2)
-            return RegExReplace(template, "\Q" . templateStrings.Value(1) . "\E", Vars[varName] ? Vars[varName] : %varName% )
-            
-        } else {
-            return RegExReplace(template, templateStrings.Value(1) , templateStrings.Value(2))
-        }
-        
+		if (RegExMatch(template, "Om)(<\!--(@@|\$)(.*?)-->)", templateStrings)) {
+			if (templateStrings.Value(2) == "@@") {
+				includedTemplate := This.GetView(templateStrings.Value(3), Vars )
+				return RegExReplace(template, "\Q" . templateStrings.Value(1) . "\E", includedTemplate , , 1 )
+			} else if (templateStrings.Value(2) == "$") {
+				varName := templateStrings.Value(3) 
+				return RegExReplace(template, "\Q" . templateStrings.Value(1) . "\E", Vars[varName] ? Vars[varName] : %varName% , , 1 )
+			}
+		}
     }
 
 	AddDynaVar(names*) {
-		; This.DynaVars[This.DynaVars.Count()+1] := name
 		For id, name in names {
 			This.dynaVars[This.DynaVars.Count()+1] := name
 		}
-		; MsgBox % This.dynaVars.Count()
-
 	}
 
 	UpdateDynaVars(){
 		global
 		For id, VarName in This.dynaVars {
 			Var := %VarName%
-			; MsgBox % VarName . ": " . Var
 			Label := This.doc.getElementById(VarName).getAttribute("data-label")
 			if(Label){
 				Gosub % Label

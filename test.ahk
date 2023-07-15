@@ -6,40 +6,28 @@ CoordMode, Mouse, Screen
 
 #Include KWARK.ahk
 
-; global dynavar
+
 dynavar1 := 0
-
-; global dynavar2
 dynavar2 := "text"
-
-
-
-
-testArray := [ 1 , 2 , 3 ]
+testArray := [ "One" , "Two" , "Three" ]
 neutron := new KWARK()
-neutron.LoadTemplate("Views/bsBase.html")
-neutron.LoadView("Views/base",,{Title:"TestWindow", Variable:"<button class='btn btn-primary' name='TestDVars' class='test test2' onclick=""ahk.Clicked(event)"">Click Me!</button>", Variable2:"<span class='badge' id='dynavar1'>" . dynavar1 . "</span><span id='dynavar2'>" . dynavar2 . "</span>"})
+neutron.LoadTemplate("Views/base.html", "Autohotkey HTML Window")
+neutron.LoadView("Views/testView",,{id:"testdynamic",Title:"TestWindow", Variable:"<button class='btn btn-primary' name='TestDVars' class='test test2' onclick=""ahk.Clicked(event)"">Click Me!</button>", Variable2:"<span class='badge badge-success' id='dynavar1'>" . dynavar1 . "</span>", Variable3:"<span id='dynavar2'>" . dynavar2 . "</span>"})
 neutron.Gui("+LabelNeutron")
 neutron.AddDynaVar("dynavar1", "dynavar2", "timeReader")
 sectionhtml := ""
-For content in testArray {
-    sectionhtml .= "<p>" . content . "</p>"
+For index, content in testArray {
+    sectionhtml .= "<tr><td>" . index . "</td><td>" . content . "</td></tr>"
 }
 neutron.LoadHTML(sectionhtml, "section1")
-neutron.AppendHTML(sectionhtml, "section1")
 
-neutron.AppendView("Views/base" ,, {Title:"TestAppend"})
-; CreateSection( neutron, sectionhtml)
-
-neutron.Show("w640 h480")
+neutron.Show("w840 h680")
 testbind := ObjBindMethod(neutron, "UpdateDynaVars")
-; testbind := Func("DynamicContent").Bind("dynavar1")
 SetTimer, % testbind, 100
-; SetTimer, % testbind2, 300
-
 Return
+
 NeutronClose:
-ExitApp
+	ExitApp
 return
 
 ReloadScript:
@@ -57,7 +45,22 @@ Return
 
 Clicked(neutron, event)
 {
-	Gosub, % event.target.name
+	If (Label := event.target.name){
+		Gosub, % Label
+	}
+}
+
+ClickedArrayThing(neutron, event, value) {
+	global testArray
+	testArray.Push(value)
+	If (Label := event.target.name){
+		Gosub, % Label
+	}
+	sectionhtml := ""
+	For index, content in testArray {
+		sectionhtml .= "<tr><td>" . index . "</td><td>" . content . "</td></tr>"
+	}
+	neutron.LoadHTML(sectionhtml, "section1")
 }
 
 Submitted(neutron, event)
