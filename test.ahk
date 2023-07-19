@@ -6,6 +6,20 @@ CoordMode, Mouse, Screen
 
 #Include KWARK.ahk
 
+IniRead, ValidatorRegex, regex.ini, patterns, templateString 
+MsgBox % ValidatorRegex
+
+IniRead, ValidatorRegex, regex.ini, patterns, view 
+MsgBox % ValidatorRegex
+
+IniRead, ValidatorRegex, regex.ini, patterns, function 
+MsgBox % ValidatorRegex
+
+IniRead, ValidatorRegex, regex.ini, patterns, variable 
+MsgBox % ValidatorRegex
+
+IniRead, ValidatorRegex, regex.ini, patterns, string 
+MsgBox % ValidatorRegex
 
 dynavar1 := 0
 dynavar2 := "text"
