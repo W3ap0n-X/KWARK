@@ -10,19 +10,19 @@ CoordMode, Mouse, Screen
 dynavar1 := 0
 dynavar2 := "text"
 testArray := [ "One" , "Two" , "Three" ]
-neutron := new KWARK()
-neutron.LoadTemplate("Views/base.html", "Autohotkey HTML Window")
-neutron.LoadView("Views/testView",,{id:"testdynamic",Title:"TestWindow", Variable:"<button class='btn btn-primary' name='TestDVars' class='test test2' onclick=""ahk.Clicked(event)"">Click Me!</button>", Variable2:"<span class='badge badge-success' id='dynavar1'>" . dynavar1 . "</span>", Variable3:"<span id='dynavar2'>" . dynavar2 . "</span>"})
-neutron.Gui("+LabelNeutron")
-neutron.AddDynaVar("dynavar1", "dynavar2", "timeReader")
+kwark := new KWARK()
+kwark.LoadTemplate("Views/base.html", "Autohotkey HTML Window")
+kwark.LoadView("Views/testView",,{id:"testdynamic",Title:"TestWindow", Variable:"<button class='btn btn-primary' name='TestDVars' class='test test2' onclick=""ahk.Clicked(event)"">Click Me!</button>", Variable2:"<span class='badge badge-success' id='dynavar1'>" . dynavar1 . "</span>", Variable3:"<span id='dynavar2'>" . dynavar2 . "</span>"})
+kwark.Gui("+LabelNeutron")
+kwark.AddDynaVar("dynavar1", "dynavar2", "timeReader")
 sectionhtml := ""
 For index, content in testArray {
     sectionhtml .= "<tr><td>" . index . "</td><td>" . content . "</td></tr>"
 }
-neutron.LoadHTML(sectionhtml, "section1")
+kwark.LoadHTML(sectionhtml, "section1")
 
-neutron.Show("w840 h680")
-testbind := ObjBindMethod(neutron, "UpdateDynaVars")
+kwark.Show("w840 h680")
+testbind := ObjBindMethod(kwark, "UpdateDynaVars")
 SetTimer, % testbind, 100
 Return
 
