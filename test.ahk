@@ -5,22 +5,30 @@ SetBatchLines, -1
 CoordMode, Mouse, Screen
 
 #Include KWARK.ahk
+Gosub, TestWindow1
+Return
+; IniRead, ValidatorRegex, regex.ini, patterns, templateString 
+; MsgBox % ValidatorRegex
 
-IniRead, ValidatorRegex, regex.ini, patterns, templateString 
-MsgBox % ValidatorRegex
+; IniRead, ValidatorRegex, regex.ini, patterns, view 
+; MsgBox % ValidatorRegex
 
-IniRead, ValidatorRegex, regex.ini, patterns, view 
-MsgBox % ValidatorRegex
+; IniRead, ValidatorRegex, regex.ini, patterns, function 
+; MsgBox % ValidatorRegex
 
-IniRead, ValidatorRegex, regex.ini, patterns, function 
-MsgBox % ValidatorRegex
+; IniRead, ValidatorRegex, regex.ini, patterns, variable 
+; MsgBox % ValidatorRegex
 
-IniRead, ValidatorRegex, regex.ini, patterns, variable 
-MsgBox % ValidatorRegex
+; IniRead, ValidatorRegex, regex.ini, patterns, string 
+; MsgBox % ValidatorRegex
+TestWindow2:
+kwark2 := new KWARK()
+kwark2.LoadTemplate("Views/base.html", "Autohotkey HTML Window")
+kwark2.Show("w840 h680")
+Return
 
-IniRead, ValidatorRegex, regex.ini, patterns, string 
-MsgBox % ValidatorRegex
 
+TestWindow1:
 dynavar1 := 0
 dynavar2 := "text"
 testArray := [ "One" , "Two" , "Three" ]

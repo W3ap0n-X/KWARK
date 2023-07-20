@@ -85,12 +85,19 @@ class KWARK Extends NeutronWindow {
 			title := fileName
 		}
 		This.Load(filename)
-		bodyHtml:= This.doc.body.innerhtml
-		bodyHtml := This.ParseTemplate(bodyHtml)
-		This.doc.body.innerhtml := bodyHtml
-		customcsstest := "<link href='css/custom.css' rel='stylesheet'>"
+		
+		customcsstest := "custom"
 		headerHtml := This.doc.head.innerhtml
-		headerHtml := This.ParseTemplate(headerHtml, {customcsstest: customcsstest})
+		headerVars := {"customcsstest": customcsstest}
+		; MsgBox % headerHtml
+		; MsgBox % "headerVars.Count(): " . headerVars.Count()
+		headerHtml := This.ParseTemplate(headerHtml, headerVars)
+
+		bodyHtml:= This.doc.body.innerHtml
+		
+		bodyHtml := This.ParseTemplate(bodyHtml , headerVars)
+		This.doc.body.innerhtml := bodyHtml
+
 		This.doc.head.innerhtml := headerHtml
 		This.doc.getElementById("title").innerText := title
 	}
@@ -109,6 +116,7 @@ class KWARK Extends NeutronWindow {
 	{
 		fileName := A_WorkingDir "/" fileName . ".html"
 		FileRead, section, %fileName%
+		MsgBox % section
         section := This.ParseTemplate(section , Vars)
 		This.doc.getElementById(toSection).innerHtml := section
 	}
@@ -135,11 +143,52 @@ class KWARK Extends NeutronWindow {
 		This.doc.getElementById(toSection).innerHtml := html
 	}
 
-    ParseTemplate(template, Vars := false) {
+    ; ParseTemplate(template, Vars := false) {
+    ;     Loop
+    ;     {
+	; 		If (RegExMatch(template, "<\!--(@@|\$).*?-->" )) {
+	; 			template := This.ParsePart(template, Vars)
+	; 		}
+	; 		Else {
+    ;             break
+    ;         }
+    ;     }
+    ;     return template
+    ; }
+
+	ParseTemplate(template, Vars := false) {
+		; MsgBox % "Vars.Count()1: " . Vars.Count()
+		; MsgBox % Vars.HasKey("customcsstest")
         Loop
         {
-			If (RegExMatch(template, "<\!--(@@|\$).*?-->" )) {
-				template := This.ParsePart(template, Vars)
+			IniRead, ValidatorRegex, regex.ini, patterns, templateString 
+			IniRead, ViewRegex, regex.ini, patterns, view 
+			IniRead, VarRegex, regex.ini, patterns, variable 
+			; MsgBox % "Vars.Count()2: " . Vars.Count()
+			; inVars := Vars
+			If ( match := RegExMatch(template, "O)" . ValidatorRegex, tMatch )) {
+				; MsgBox % tMatch.Value("templateString")
+				
+				; MsgBox % "inVars.Count()3: " . inVars.Count()
+				; template := This.ParsePart(template, Vars)
+				If (match := RegExMatch(tMatch.Value("templateString"), "O)" . ViewRegex, tView ) ) {
+					; MsgBox % "viewName: "tView.Value("viewName")
+					; MsgBox % tView.Count()
+					incTemplate := This.GetView(tView.Value("viewName"), Vars )
+					; MsgBox % incTemplate
+					template := RegExReplace(template, "\Q" . tMatch.Value("templateString") . "\E", incTemplate , , 1 )
+				} Else If (match := RegExMatch(tMatch.Value("templateString"), "O)" . VarRegex, tVariable )){
+					; MsgBox % "varname: " . tVariable.Value("varname") . "`n" . Vars.HasKey("customcsstest")
+					
+					if (Vars.HasKey(tVariable.Value("varname"))) {
+						; MsgBox % "meep`n" . tVariable.Value("varname") . "`n" . Vars[tVariable.Value("varname")]
+						template := RegExReplace(template, "\Q" . tMatch.Value("templateString") . "\E", Vars[tVariable.Value("varname")] , , 1 )
+					}
+					
+				}
+				
+				; MsgBox % tMatch.Value("templateString")
+				
 			}
 			Else {
                 break
