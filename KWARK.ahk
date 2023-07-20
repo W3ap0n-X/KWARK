@@ -106,17 +106,17 @@ class KWARK Extends NeutronWindow {
 		fileName := A_WorkingDir "/" fileName . ".html"
 		FileRead, section, %fileName%
 		section := This.ParseTemplate(section , Vars)
-		MsgBox % "Before:" . This.doc.getElementById(toSection).innerHtml
+		; MsgBox % "Before:" . This.doc.getElementById(toSection).innerHtml
 		newcontent := This.doc.getElementById(toSection).innerHtml . section
 		This.doc.getElementById(toSection).innerHtml := newcontent
-		MsgBox % "After:" . This.doc.getElementById(toSection).innerHtml
+		; MsgBox % "After:" . This.doc.getElementById(toSection).innerHtml
 	}
 
     LoadView(fileName, toSection:="main", Vars := false)
 	{
 		fileName := A_WorkingDir "/" fileName . ".html"
 		FileRead, section, %fileName%
-		MsgBox % section
+		; MsgBox % section
         section := This.ParseTemplate(section , Vars)
 		This.doc.getElementById(toSection).innerHtml := section
 	}
@@ -197,17 +197,17 @@ class KWARK Extends NeutronWindow {
         return template
     }
 
-    ParsePart(template, Vars := false){
-		if (RegExMatch(template, "Om)(<\!--(@@|\$)(.*?)-->)", templateStrings)) {
-			if (templateStrings.Value(2) == "@@") {
-				includedTemplate := This.GetView(templateStrings.Value(3), Vars )
-				return RegExReplace(template, "\Q" . templateStrings.Value(1) . "\E", includedTemplate , , 1 )
-			} else if (templateStrings.Value(2) == "$") {
-				varName := templateStrings.Value(3) 
-				return RegExReplace(template, "\Q" . templateStrings.Value(1) . "\E", Vars[varName] ? Vars[varName] : %varName% , , 1 )
-			}
-		}
-    }
+    ; ParsePart(template, Vars := false){
+	; 	if (RegExMatch(template, "Om)(<\!--(@@|\$)(.*?)-->)", templateStrings)) {
+	; 		if (templateStrings.Value(2) == "@@") {
+	; 			includedTemplate := This.GetView(templateStrings.Value(3), Vars )
+	; 			return RegExReplace(template, "\Q" . templateStrings.Value(1) . "\E", includedTemplate , , 1 )
+	; 		} else if (templateStrings.Value(2) == "$") {
+	; 			varName := templateStrings.Value(3) 
+	; 			return RegExReplace(template, "\Q" . templateStrings.Value(1) . "\E", Vars[varName] ? Vars[varName] : %varName% , , 1 )
+	; 		}
+	; 	}
+    ; }
 
 	AddDynaVar(names*) {
 		For id, name in names {
