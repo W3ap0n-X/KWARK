@@ -7,5 +7,6 @@ $(document).ready(function(){
         $(".kwark-header-pillow").height( $(".kwark-header").height() );
         $("#kwark-sidebar").height( $("#window").height() - $(".kwark-footer").height() - $(".kwark-header").height()  );
         $("#kwark-sidebar-pillow").width( $("#kwark-sidebar").width() );
+        $("#kwark-sidebar-tabpane").width( $("#window").width() - $("#kwark-sidebar").width() );
     });
 });
