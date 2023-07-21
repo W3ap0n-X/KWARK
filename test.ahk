@@ -29,6 +29,7 @@ kwark2 := new KWARK()
 kwark2.LoadTemplate("Views/base.html", "Autohotkey HTML Window")
 kwark2.LoadView("Views/tabview")
 kwark2.LoadView("Views/testView","v-pills-dynavar",{id:"testdynamic",Title:"TestWindow", Variable:"<button class='btn btn-primary' name='TestDVars' class='test test2' onclick=""ahk.Clicked(event)"">Click Me!</button>", Variable2:"<span class='badge badge-success' id='dynavar1'>" . dynavar1 . "</span>", Variable3:"<span id='dynavar2'>" . dynavar2 . "</span>"})
+kwark2.Gui("+LabelNeutron")
 kwark2.AddDynaVar("dynavar1", "dynavar2", "timeReader")
 sectionhtml := ""
 For index, content in testArray {
