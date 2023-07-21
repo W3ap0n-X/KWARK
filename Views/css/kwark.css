@@ -1,33 +1,58 @@
 .title-btn {
-    padding: 0.35em 1.0em;
-    cursor: pointer;
-    vertical-align: bottom;
-    font-family: Webdings;
-    font-size: 11pt;
-  }
+  padding: 0.35em 1.0em;
+  cursor: pointer;
+  vertical-align: bottom;
+  font-family: Webdings;
+  font-size: 11pt;
+}
+body .title-btn-text {
+  overflow-x: hidden;
+}
 
-  body .title-btn-restore {
-    display: none
-  }
-  
-  body.neutron-maximized .title-btn-restore {
-    display: block
-  }
-  
-  body.neutron-maximized .title-btn-maximize {
-    display: none
-  }
+body .title-btn-restore {
+  display: none
+}
 
-  .title-btn:hover {
-    background: rgba(0, 0, 0, .2);
-  }
+body.neutron-maximized .title-btn-restore {
+  display: block
+}
 
-  .title-btn-close:hover {
-    background: #dc3545;
-  }
+body.neutron-maximized .title-btn-maximize {
+  display: none
+}
 
-  footer.kwark-footer {
-      position: absolute;
-      width: 100%;
-      bottom: 0%;
-  }
+.title-btn:hover {
+  background: rgba(0, 0, 0, .2);
+}
+
+.title-btn-close:hover {
+  background: #dc3545;
+}
+
+div.window {
+  height: 100vh !important;
+  /* border: 1px solid !important; */
+  overflow: auto;
+  /* scrollbar-base-color: #000000;  */
+  /* scrollbar-track-color: #232323; */
+  /* padding-top: 2.039rem !important; */
+}
+
+header.kwark-header {
+  position: fixed;
+  z-index: 99;
+  width: calc(100% - 2px) ;
+  height: 2.039rem !important;
+  top: 1px;
+}
+
+.kwark-sidebar {
+  overflow-y: hidden !important;
+}
+
+footer.kwark-footer {
+  position: fixed;
+  /* margin: 1px; */
+  width: calc(100% - 2px) ;
+  bottom: 1px;
+}

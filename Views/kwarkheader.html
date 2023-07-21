@@ -1,9 +1,13 @@
-<header>
-	<div class="d-flex align-items-stretch bg-dark text-white">
-		<span id='title' class="flex-grow-1 px-2 py-1" onmousedown="neutron.DragTitleBar()">AutoHotkey</span>
+<header class="kwark-header">
+	<div class="d-flex align-items-stretch bg-dark">
+		<div class="title-btn-text flex-grow-1 px-2 py-1" onmousedown="neutron.DragTitleBar()">
+            
+            <span id="title" class="text-nowrap">AutoHotkey</span>
+        </div>
 		<span class="title-btn" onclick="neutron.Minimize()">0</span>
 		<span class="title-btn title-btn-maximize" onclick="neutron.Maximize()">1</span>
 		<span class="title-btn title-btn-restore" onclick="neutron.Maximize()">2</span>
 		<span class="title-btn title-btn-close" onclick="neutron.Close()">r</span>
 	</div>
 </header>
+<div class="kwark-header-pillow"></div>

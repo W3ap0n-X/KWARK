@@ -86,7 +86,7 @@ class KWARK Extends NeutronWindow {
 		}
 		This.Load(filename)
 		
-		customcsstest := "custom"
+		customcsstest := "wpx"
 		headerHtml := This.doc.head.innerhtml
 		headerVars := {"customcsstest": customcsstest}
 		; MsgBox % headerHtml

@@ -5,7 +5,7 @@ SetBatchLines, -1
 CoordMode, Mouse, Screen
 
 #Include KWARK.ahk
-Gosub, TestWindow1
+Gosub, TestWindow2
 Return
 ; IniRead, ValidatorRegex, regex.ini, patterns, templateString 
 ; MsgBox % ValidatorRegex
@@ -22,9 +22,22 @@ Return
 ; IniRead, ValidatorRegex, regex.ini, patterns, string 
 ; MsgBox % ValidatorRegex
 TestWindow2:
+dynavar1 := 0
+dynavar2 := "text"
+testArray := [ "One" , "Two" , "Three" ]
 kwark2 := new KWARK()
 kwark2.LoadTemplate("Views/base.html", "Autohotkey HTML Window")
+kwark2.LoadView("Views/tabview")
+kwark2.LoadView("Views/testView","v-pills-dynavar",{id:"testdynamic",Title:"TestWindow", Variable:"<button class='btn btn-primary' name='TestDVars' class='test test2' onclick=""ahk.Clicked(event)"">Click Me!</button>", Variable2:"<span class='badge badge-success' id='dynavar1'>" . dynavar1 . "</span>", Variable3:"<span id='dynavar2'>" . dynavar2 . "</span>"})
+kwark2.AddDynaVar("dynavar1", "dynavar2", "timeReader")
+sectionhtml := ""
+For index, content in testArray {
+    sectionhtml .= "<tr><td>" . index . "</td><td>" . content . "</td></tr>"
+}
+kwark2.LoadHTML(sectionhtml, "section1")
 kwark2.Show("w840 h680")
+testbind2 := ObjBindMethod(kwark2, "UpdateDynaVars")
+SetTimer, % testbind2, 100
 Return
 
 

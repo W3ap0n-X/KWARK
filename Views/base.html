@@ -1,15 +1,23 @@
-<!DOCTYPE html><html>
-		<head>
-			<meta http-equiv='X-UA-Compatible' content='IE=edge'>
-			<link href="css/kwark.css" rel="stylesheet">
-			<link href='css/{{$customcsstest}}.css' rel='stylesheet'>
-			<script src="js/jquery.min.js"></script>
-			<script src="js/bootstrap.min.js"></script>
-		</head>
-		<body>
-		{{@kwarkheader}}
-		<div class='container' id='main' name='main'>content</div>
-		{{@kwarkfooter}}
-		<script></script>
+<!DOCTYPE html><html >
+	<head>
+		<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+		
+		<link href="css/kwark.css" rel="stylesheet">
+		<link href="css/bootstrap.min.css" rel="stylesheet">
+		<link href='css/{{$customcsstest}}.css' rel='stylesheet'>
+		
+		<script src="js/jquery.min.js"></script>
+		<script src="js/bootstrap.min.js"></script>
+	</head>
+	<body >
+		
+		<div id="window" class="window border border-med p-0">
+			{{@kwarkheader}}
+			<div class='overflow-auto scrollbar' id='main' name='main'>content</div>
+			{{@kwarkfooter}}
+		</div>
+			
+		<script src="js/kwark.js"></script>
 	</body>
+	
 </html>
