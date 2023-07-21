@@ -24,7 +24,7 @@
 ; SOFTWARE.
 ;
 
-class NeutronWindow
+class NeutronWindowX
 {
 	static TEMPLATE := "
 ( ; html
@@ -492,7 +492,11 @@ class NeutronWindow
 	}
 	
 	; Shows a hidden Neutron window.
-	Show(options:="")
+	Show(options:=""){
+		This._Show(options)
+	}
+
+	_Show(options:="")
 	{
 		w := RegExMatch(options, "w\s*\K\d+", match) ? match : this.w
 		h := RegExMatch(options, "h\s*\K\d+", match) ? match : this.h
@@ -531,7 +535,7 @@ class NeutronWindow
 	Example:
 	
 	; AutoExecute Section
-	neutron := new NeutronWindow()
+	neutron := new NeutronWindowX()
 	neutron.Load("index.html")
 	neutron.Show()
 	return
@@ -595,7 +599,7 @@ class NeutronWindow
 	;
 	; Example:
 	;
-	; neutron := new NeutronWindow("<body><p>A</p><p>B</p><p>C</p></body>")
+	; neutron := new NeutronWindowX("<body><p>A</p><p>B</p><p>C</p></body>")
 	; neutron.Show()
 	; for i, element in neutron.Each(neutron.body.children)
 	;     MsgBox, % i ": " element.innerText
@@ -616,7 +620,7 @@ class NeutronWindow
 	
 	Example:
 	
-	neutron := new NeutronWindow("<form>"
+	neutron := new NeutronWindowX("<form>"
 	. "<input type='text' name='field1' value='One'>"
 	. "<input type='text' name='field2' value='Two'>"
 	. "<input type='text' name='field3' value='Three'>"
@@ -813,7 +817,7 @@ class NeutronWindow
 		;
 		; Example:
 		;
-		; fd := new NeutronWindow.FormData()
+		; fd := new NeutronWindowX.FormData()
 		; fd.Add("foods", "hamburgers")
 		; fd.Add("foods", "hotdogs")
 		; fd.Add("foods", "pizza")
@@ -839,7 +843,7 @@ class NeutronWindow
 		;
 		; Example:
 		;
-		; fd := new NeutronWindow.FormData()
+		; fd := new NeutronWindowX.FormData()
 		; fd.Add("foods", "hamburgers")
 		; fd.Add("foods", "hotdogs")
 		; MsgBox, % fd.foods ; hamburgers
@@ -857,7 +861,7 @@ class NeutronWindow
 		;
 		; Example:
 		;
-		; fd := new NeutronWindow.FormData()
+		; fd := new NeutronWindowX.FormData()
 		; fd.Add("z", "3")
 		; fd.Add("y", "2")
 		; fd.Add("x", "1")

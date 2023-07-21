@@ -1,4 +1,3 @@
-; ddd
 #NoEnv
 SetBatchLines, -1
 #SingleInstance, Force
@@ -7,62 +6,36 @@ CoordMode, Mouse, Screen
 #Include KWARK.ahk
 Gosub, TestWindow2
 Return
-; IniRead, ValidatorRegex, regex.ini, patterns, templateString 
-; MsgBox % ValidatorRegex
 
-; IniRead, ValidatorRegex, regex.ini, patterns, view 
-; MsgBox % ValidatorRegex
-
-; IniRead, ValidatorRegex, regex.ini, patterns, function 
-; MsgBox % ValidatorRegex
-
-; IniRead, ValidatorRegex, regex.ini, patterns, variable 
-; MsgBox % ValidatorRegex
-
-; IniRead, ValidatorRegex, regex.ini, patterns, string 
-; MsgBox % ValidatorRegex
 TestWindow2:
 dynavar1 := 0
 dynavar2 := "text"
-testArray := [ "One" , "Two" , "Three" ]
-kwark2 := new KWARK()
-kwark2.LoadTemplate("Views/base.html", "Autohotkey HTML Window")
-kwark2.LoadView("Views/tabview")
-kwark2.LoadView("Views/testView","v-pills-dynavar",{id:"testdynamic",Title:"TestWindow", Variable:"<button class='btn btn-primary' name='TestDVars' class='test test2' onclick=""ahk.Clicked(event)"">Click Me!</button>", Variable2:"<span class='badge badge-secondary' id='dynavar1'>" . dynavar1 . "</span>", Variable3:"<span id='dynavar2'>" . dynavar2 . "</span>"})
-kwark2.Gui("+LabelNeutron")
-kwark2.AddDynaVar("dynavar1", "dynavar2", "timeReader")
-sectionhtml := ""
-For index, content in testArray {
-    sectionhtml .= "<tr><td>" . index . "</td><td>" . content . "</td></tr>"
-}
-kwark2.LoadHTML(sectionhtml, "section1")
-kwark2.Show("w840 h680")
-testbind2 := ObjBindMethod(kwark2, "UpdateDynaVars")
-SetTimer, % testbind2, 100
-Return
 
+timeReader := Func("ClockVar")
 
-TestWindow1:
-dynavar1 := 0
-dynavar2 := "text"
-testArray := [ "One" , "Two" , "Three" ]
+dynaVar3 := [ "One" , "Two" , "Three" ]
+
 kwark := new KWARK()
+
+dv3Viewr := Func("ArrayV").Bind(kwark, "dv3Viewr", dynaVar3)
+
+kwark.AddDynaVar("dynavar1" , "dynavar2", "dynavar3" , "timeReader")
+kwark.AddBoundFunc("dv3Viewr")
+
 kwark.LoadTemplate("Views/base.html", "Autohotkey HTML Window")
-kwark.LoadView("Views/testView",,{id:"testdynamic",Title:"TestWindow", Variable:"<button class='btn btn-primary' name='TestDVars' class='test test2' onclick=""ahk.Clicked(event)"">Click Me!</button>", Variable2:"<span class='badge badge-success' id='dynavar1'>" . dynavar1 . "</span>", Variable3:"<span id='dynavar2'>" . dynavar2 . "</span>"})
-kwark.Gui("+LabelNeutron")
-kwark.AddDynaVar("dynavar1", "dynavar2", "timeReader")
-sectionhtml := ""
-For index, content in testArray {
-    sectionhtml .= "<tr><td>" . index . "</td><td>" . content . "</td></tr>"
-}
-kwark.LoadHTML(sectionhtml, "section1")
+kwark.LoadView("Views/tabview")
+kwark.LoadView("Views/testView","v-pills-dynavar",{id:"testdynamic",Title:"TestWindow", Variable:"<button class='btn btn-primary' data-label='TestDVars' class='test test2' onclick=""neutron.Button(event)"">Click Me!</button>", Variable2:"<span class='badge badge-secondary' id='dynavar1'>" . dynavar1 . "</span>", Variable3:"<span id='dynavar2'>" . dynavar2 . "</span>"})
+kwark.Gui("+LabelKWARK_")
 
 kwark.Show("w840 h680")
-testbind := ObjBindMethod(kwark, "UpdateDynaVars")
-SetTimer, % testbind, 100
+
+
+blankwindow := new KWARK()
+blankwindow.Show("w840 h680")
 Return
 
 NeutronClose:
+KWARK_Close:
 	ExitApp
 return
 
@@ -75,28 +48,21 @@ TestDVars:
 	dynavar2 .= "!"
 Return
 
-timeReaderUpdate:
-	timeReader := A_Hour . ":" . A_Min . ":" . A_Sec
-Return
-
-Clicked(neutron, event)
-{
-	If (Label := event.target.name){
-		Gosub, % Label
-	}
+ClockVar(prefix := "") {
+	return % prefix . A_Hour . ":" . A_Min . ":" . A_Sec
 }
 
-ClickedArrayThing(neutron, event, value) {
-	global testArray
-	testArray.Push(value)
-	If (Label := event.target.name){
-		Gosub, % Label
-	}
+ArrayV(neutron, table, array){
 	sectionhtml := ""
-	For index, content in testArray {
+	For index, content in array {
 		sectionhtml .= "<tr><td>" . index . "</td><td>" . content . "</td></tr>"
 	}
-	neutron.LoadHTML(sectionhtml, "section1")
+	return sectionhtml
+}
+
+ArrayViewer(neutron, array, value) {
+	array := %array%
+	array.Push(value)
 }
 
 Submitted(neutron, event)

@@ -1,5 +1,5 @@
 #Include %A_LineFile%\..\Neutron.ahk
-class KWARK Extends NeutronWindow {
+class KWARK Extends NeutronWindowX {
     static TEMPLATE := "
 ( ; html
 <!DOCTYPE html><html>
@@ -80,6 +80,17 @@ class KWARK Extends NeutronWindow {
 		This.CreateWindow(html, css, js, title)
 	}
 
+	Show(options:=""){
+		This._Show(options)
+		This.WindowPoll := WindowPoll := ObjBindMethod(kwark, "UpdateDynaVars")
+		SetTimer, % WindowPoll, 100
+	}
+
+	Destroy(){
+		WindowPoll := This.WindowPoll
+		SetTimer, % WindowPoll, Off
+	}
+
 	LoadTemplate(filename, title:= "" ){
 		if(!title){
 			title := fileName
@@ -89,8 +100,6 @@ class KWARK Extends NeutronWindow {
 		customcsstest := "wpx"
 		headerHtml := This.doc.head.innerhtml
 		headerVars := {"customcsstest": customcsstest}
-		; MsgBox % headerHtml
-		; MsgBox % "headerVars.Count(): " . headerVars.Count()
 		headerHtml := This.ParseTemplate(headerHtml, headerVars)
 
 		bodyHtml:= This.doc.body.innerHtml
@@ -106,17 +115,14 @@ class KWARK Extends NeutronWindow {
 		fileName := A_WorkingDir "/" fileName . ".html"
 		FileRead, section, %fileName%
 		section := This.ParseTemplate(section , Vars)
-		; MsgBox % "Before:" . This.doc.getElementById(toSection).innerHtml
 		newcontent := This.doc.getElementById(toSection).innerHtml . section
 		This.doc.getElementById(toSection).innerHtml := newcontent
-		; MsgBox % "After:" . This.doc.getElementById(toSection).innerHtml
 	}
 
     LoadView(fileName, toSection:="main", Vars := false)
 	{
 		fileName := A_WorkingDir "/" fileName . ".html"
 		FileRead, section, %fileName%
-		; MsgBox % section
         section := This.ParseTemplate(section , Vars)
 		This.doc.getElementById(toSection).innerHtml := section
 	}
@@ -126,7 +132,7 @@ class KWARK Extends NeutronWindow {
 		filePath := This.ViewDir . "/" fileName . ".html"
 		if (FileExist(filePath)){
 			FileRead, view, %filePath%
-        	view := This.ParseTemplate(view , Vars)
+			view := This.ParseTemplate(view , Vars)	
 		} Else {
 			view := "{Error: View " . fileName . " 404} "
 		}
@@ -143,29 +149,13 @@ class KWARK Extends NeutronWindow {
 		This.doc.getElementById(toSection).innerHtml := html
 	}
 
-    ; ParseTemplate(template, Vars := false) {
-    ;     Loop
-    ;     {
-	; 		If (RegExMatch(template, "<\!--(@@|\$).*?-->" )) {
-	; 			template := This.ParsePart(template, Vars)
-	; 		}
-	; 		Else {
-    ;             break
-    ;         }
-    ;     }
-    ;     return template
-    ; }
-
 	ParseTemplate(template, Vars := false) {
-		; MsgBox % "Vars.Count()1: " . Vars.Count()
-		; MsgBox % Vars.HasKey("customcsstest")
         Loop
         {
 			IniRead, ValidatorRegex, regex.ini, patterns, templateString 
 			IniRead, ViewRegex, regex.ini, patterns, view 
 			IniRead, VarRegex, regex.ini, patterns, variable 
-			; MsgBox % "Vars.Count()2: " . Vars.Count()
-			; inVars := Vars
+
 			If ( match := RegExMatch(template, "O)" . ValidatorRegex, tMatch )) {
 				; MsgBox % tMatch.Value("templateString")
 				
@@ -197,33 +187,111 @@ class KWARK Extends NeutronWindow {
         return template
     }
 
-    ; ParsePart(template, Vars := false){
-	; 	if (RegExMatch(template, "Om)(<\!--(@@|\$)(.*?)-->)", templateStrings)) {
-	; 		if (templateStrings.Value(2) == "@@") {
-	; 			includedTemplate := This.GetView(templateStrings.Value(3), Vars )
-	; 			return RegExReplace(template, "\Q" . templateStrings.Value(1) . "\E", includedTemplate , , 1 )
-	; 		} else if (templateStrings.Value(2) == "$") {
-	; 			varName := templateStrings.Value(3) 
-	; 			return RegExReplace(template, "\Q" . templateStrings.Value(1) . "\E", Vars[varName] ? Vars[varName] : %varName% , , 1 )
-	; 		}
-	; 	}
-    ; }
-
 	AddDynaVar(names*) {
 		For id, name in names {
-			This.dynaVars[This.DynaVars.Count()+1] := name
+			val := % %name%
+			if (isFunc(val)) {
+				This.dynaVars[This.DynaVars.Count()+1] := new This.DynaFunc(name)
+			} Else If (IsObject(val)){
+				This.dynaVars[This.DynaVars.Count()+1] := new This.DynaObj(name)
+			} Else {
+				This.dynaVars[This.DynaVars.Count()+1] := new This.DynaVar(name)
+			}
+			
+		}
+	}
+
+	AddBoundFunc(funcObj){
+		val := % %funcObj%
+		If (IsObject(val)){
+			This.dynaVars[This.DynaVars.Count()+1] := new This.DynaFunc(funcObj)
 		}
 	}
 
 	UpdateDynaVars(){
-		global
-		For id, VarName in This.dynaVars {
-			Var := %VarName%
-			Label := This.doc.getElementById(VarName).getAttribute("data-label")
+		For id, Var in This.dynaVars {
+			Label := This.doc.getElementById(Var.Name).getAttribute("data-label")
 			if(Label){
 				Gosub % Label
 			}
-			This.doc.getElementById(VarName).innerText := Var
+			This.doc.getElementById(Var.Name).innerHtml := Var.Value
+		}
+	}
+
+	Button(event)
+	{
+		If (Label := event.target.getAttribute("data-label")){
+			Gosub, % Label
+		}
+	}
+
+	Class DynaVar {
+		__New(Var) {
+			This.Name := Var
+			return % This
+		}
+
+		Value {
+			get {
+				name := % This.name
+				val := %name%
+				return % val
+			}
+			set {
+				name := % This.name
+				return %name% := value
+			}
+		}
+	}
+	Class DynaFunc {
+		__New(FuncRef) {
+			This.Name := FuncRef
+			This.Func := %FuncRef%
+			return % This
+		}
+
+		Value {
+			get {
+				return % This.Func.Call()
+			}
+		}
+	}
+	Class DynaObj {
+		__New(objname){
+			
+			This.Name := objname
+			This.Obj := %objname%
+			return % This
+		}
+
+		__Get(key) {
+			name := % This.name
+			obj := This.Obj := %name%
+			Return % obj[key]
+		}
+
+		Value[key:=""] {
+			get {
+				name := % This.name
+				obj := %name%
+				if (key) {
+					val := obj[key]
+				} Else {
+					val := obj
+				}
+				This.Obj := obj
+				return % val
+			}
+
+			set {
+				name := % This.name
+				objval := %name%
+				if(key) {
+					objval[key] := value
+				}
+				This.Obj := objval
+				return %name% := objval
+			}
 		}
 	}
 }
