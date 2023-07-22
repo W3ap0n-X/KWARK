@@ -74,6 +74,7 @@ class KWARK Extends NeutronWindowX {
 )"
 
 	dynaVars := []
+	PollRate := 100
 	ViewDir := StrReplace(A_LineFile, "KWARK.ahk" , "") . "Views\"
 
 	__New(html:="", css:="", js:="", title:="KWARK") {
@@ -82,13 +83,13 @@ class KWARK Extends NeutronWindowX {
 
 	Show(options:=""){
 		This._Show(options)
-		This.WindowPoll := WindowPoll := ObjBindMethod(kwark, "UpdateDynaVars")
-		SetTimer, % WindowPoll, 100
+		This.WindowPoll := WindowPoll := ObjBindMethod(This, "UpdateDynaVars")
+		This.PollingStart()
 	}
 
 	Destroy(){
-		WindowPoll := This.WindowPoll
-		SetTimer, % WindowPoll, Off
+		This.PollingStop()
+		
 	}
 
 	LoadTemplate(filename, title:= "" ){
@@ -186,6 +187,23 @@ class KWARK Extends NeutronWindowX {
         }
         return template
     }
+
+	PollingSet(rate){
+		; MsgBox % rate
+		This.PollRate := rate
+		This.PollingStart()
+
+	}
+
+	PollingStart(){
+		WindowPoll := This.WindowPoll
+		SetTimer, % WindowPoll, % This.PollRate
+	}
+	
+	PollingStop(){
+		WindowPoll := This.WindowPoll
+		SetTimer, % WindowPoll, Off
+	}
 
 	AddDynaVar(names*) {
 		For id, name in names {

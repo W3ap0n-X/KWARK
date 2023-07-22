@@ -15,23 +15,28 @@ timeReader := Func("ClockVar")
 
 dynaVar3 := [ "One" , "Two" , "Three" ]
 
-kwark := new KWARK()
+demo := new KWARK()
 
-dv3Viewr := Func("ArrayV").Bind(kwark, "dv3Viewr", dynaVar3)
+dv3Viewr := Func("ArrayV").Bind(demo, "dv3Viewr", dynaVar3)
 
-kwark.AddDynaVar("dynavar1" , "dynavar2", "dynavar3" , "timeReader")
-kwark.AddBoundFunc("dv3Viewr")
+demo.AddDynaVar("dynavar1" , "dynavar2", "dynavar3" , "timeReader")
+demo.AddBoundFunc("dv3Viewr")
 
-kwark.LoadTemplate("Views/base.html", "Autohotkey HTML Window")
-kwark.LoadView("Views/tabview")
-kwark.LoadView("Views/testView","v-pills-dynavar",{id:"testdynamic",Title:"TestWindow", Variable:"<button class='btn btn-primary' data-label='TestDVars' class='test test2' onclick=""neutron.Button(event)"">Click Me!</button>", Variable2:"<span class='badge badge-secondary' id='dynavar1'>" . dynavar1 . "</span>", Variable3:"<span id='dynavar2'>" . dynavar2 . "</span>"})
-kwark.Gui("+LabelKWARK_")
+demo.LoadTemplate("Views/base.html", "KWARK")
+demo.LoadView("Views/tabview")
+demo.LoadView("Views/testView","v-pills-dynavar",{id:"testdynamic",Title:"TestWindow", Variable:"<button class='btn btn-primary' data-label='TestDVars' class='test test2' onclick=""neutron.Button(event)"">Click Me!</button>", Variable2:"<span class='badge badge-secondary' id='dynavar1'>" . dynavar1 . "</span>", Variable3:"<span id='dynavar2'>" . dynavar2 . "</span>"})
+demo.Gui("+LabelKWARK_")
 
-kwark.Show("w840 h680")
+demo.Show("w840 h680")
 
 
-blankwindow := new KWARK()
-blankwindow.Show("w840 h680")
+Return
+
+TestWindow1:
+	demo2 := new NeutronWindowX()
+	; demo2.LoadTemplate("Views/base.html", "KWARK")
+	demo2.Show("w840 h680")
+	demo2.PollingStop()
 Return
 
 NeutronClose:
