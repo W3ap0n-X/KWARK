@@ -35,7 +35,7 @@ global itWas_Who, itWas_Where, itWas_Weapon
 
 
 
-demo.AddDynaVar("dynavar1" , "dynavar2", "dynavar3" , "timeReader", "cluePage", "script_ram")
+demo.AddDynaVar("dynavar1" , "dynavar2", "dynavar3" , "timeReader", "script_ram")
 demo.AddBoundFunc("dv3Viewr")
 
 
@@ -86,8 +86,9 @@ ScriptRam() {
 	Return % GetProcessMemoryUsage(A_SelfPID) " MB"
 }
 
-Clue_Form(){
+Clue_Form(neutron){
 	global
+	; MsgBox % CF
 	newFormHtml := "<form onsubmit='ahk.Submit(event)'>"
 	For k , field in Fields {
 		newFormHtml .= "`n<label class='my-1 mr-2' for='clue" . Field . "'>" . Field . "?</label><select class='custom-select my-1 mr-sm-2' id='clue" . Field . "'><option selected>Choose...</option>"
@@ -107,8 +108,8 @@ Clue_Form(){
 		newFormHtml .= "</select>"
 	}
 	newFormHtml .= "<button type='submit' class='btn btn-primary my-1'>Submit</button></form>"
-	; demo.LoadHTML(newFormHtml, "Clue_Form")
-	Return % newFormHtml
+	demo.LoadHTML(newFormHtml, "cluePage")
+	; Return % newFormHtml
 }
 
 ClockVar(prefix := "") {
